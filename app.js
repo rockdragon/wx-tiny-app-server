@@ -8,6 +8,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const config = require('./config');
+const url = require('url');
+const WebSocket = require('ws');
 
 const app = express();
 
@@ -40,7 +42,24 @@ process.on('uncaughtException', error => {
     console.log(error);
 });
 
+// 创建Server
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+
+wss.on('connection', function connection(ws) {
+  console.log('connection created:', ws)
+  const location = url.parse(ws.upgradeReq.url, true);
+  // You might use location.query.access_token to authenticate or share sessions
+  // or ws.upgradeReq.headers.cookie (see http://stackoverflow.com/a/16395220/151312)
+
+  ws.on('message', function incoming(message) {
+    console.log('received: %s', message);
+  });
+
+  ws.send('something');
+});
+
 // 启动server
-http.createServer(app).listen(config.port, () => {
+server.listen(config.port, () => {
     console.log('Express server listening on port: %s', config.port);
 });
