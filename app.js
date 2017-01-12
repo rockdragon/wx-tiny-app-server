@@ -30,11 +30,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // parse `application/json`
 app.use(bodyParser.json());
 
-app.use(function(req, res, next) {
-    console.log('request from', req.ip, req.originalUrl)
-    next()
-})
-
 app.use('/', require('./routes'));
 
 // 打印异常日志
